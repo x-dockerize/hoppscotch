@@ -22,7 +22,9 @@ services:
       - "traefik.http.routers.hoppscotch.service=hoppscotch"
 
       # Service
-      - "traefik.http.services.hoppscotch.loadbalancer.server.port=3000"
+      - "traefik.http.services.hoppscotch.loadbalancer.server.port=3200"
+    volumes:
+      - ./.docker/hoppscotch/data:/data
 
   postgres:
     image: postgres:16-alpine
@@ -33,7 +35,7 @@ services:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - ./.docker/postgres/data:/var/lib/postgresql/data
     networks:
       - app-network
 
