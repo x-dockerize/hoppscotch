@@ -1,0 +1,45 @@
+services:
+  hoppscotch:
+    image: hoppscotch/hoppscotch:latest
+    container_name: hoppscotch
+    restart: unless-stopped
+    environment:
+      - HOPPSCOTCH_BASE_URL=${HOPPSCOTCH_BASE_URL}
+      - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:5432/${DATABASE_NAME}
+    depends_on:
+      - postgres
+    networks:
+      - internal-network
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-network"
+
+      # Router
+      - "traefik.http.routers.hoppscotch.rule=Host(`${SERVER_HOSTNAME}`)"
+      - "traefik.http.routers.hoppscotch.entrypoints=websecure"
+      - "traefik.http.routers.hoppscotch.tls.certresolver=le-cloudflare"
+      - "traefik.http.routers.hoppscotch.service=hoppscotch"
+
+      # Service
+      - "traefik.http.services.hoppscotch.loadbalancer.server.port=3000"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: hoppscotch-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+
+networks:
+  traefik-network:
+    external: true
+  app-network:
+    driver: bridge
