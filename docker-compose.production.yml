@@ -4,12 +4,12 @@ services:
     container_name: hoppscotch
     restart: unless-stopped
     environment:
-      - HOPPSCOTCH_BASE_URL=${HOPPSCOTCH_BASE_URL}
+      - HOPPSCOTCH_BASE_URL=${SERVER_HOSTNAME}
       - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:5432/${DATABASE_NAME}
     depends_on:
       - postgres
     networks:
-      - internal-network
+      - app-network
       - traefik-network
     labels:
       - "traefik.enable=true"
