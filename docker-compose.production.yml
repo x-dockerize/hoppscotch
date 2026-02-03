@@ -1,47 +1,101 @@
 services:
-  hoppscotch:
-    image: hoppscotch/hoppscotch:latest
-    container_name: hoppscotch
+  backend:
+    image: hoppscotch/hoppscotch-backend:latest
+    container_name: hoppscotch-backend
     restart: unless-stopped
+    env_file: .env
     environment:
-      - HOPPSCOTCH_BASE_URL=${SERVER_HOSTNAME}
-      - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:5432/${DATABASE_NAME}
+      DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-console}?connect_timeout=300
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
-      - app-network
+      - internal-network
       - traefik-network
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik-network"
+      - traefik.enable=true
+      - traefik.docker.network=traefik-network
 
-      # Router
-      - "traefik.http.routers.hoppscotch.rule=Host(`${SERVER_HOSTNAME}`)"
-      - "traefik.http.routers.hoppscotch.entrypoints=websecure"
-      - "traefik.http.routers.hoppscotch.tls.certresolver=le-cloudflare"
-      - "traefik.http.routers.hoppscotch.service=hoppscotch"
+      - traefik.http.routers.hoppscotch-backend.rule=Host(`${SERVER_HOSTNAME}`) && (PathPrefix(`/graphql`) || PathPrefix(`/v1`))
+      - traefik.http.routers.hoppscotch-backend.entrypoints=websecure
+      - traefik.http.routers.hoppscotch-backend.tls.certresolver=le-cloudflare
+      - traefik.http.routers.hoppscotch-backend.service=hoppscotch-backend
+      - traefik.http.services.hoppscotch-backend.loadbalancer.server.port=3170
 
-      # Service
-      - "traefik.http.services.hoppscotch.loadbalancer.server.port=3200"
-    volumes:
-      - ./.docker/hoppscotch/data:/data
+  admin:
+    image: hoppscotch/hoppscotch-admin:latest
+    container_name: hoppscotch-admin
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - traefik-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-network
+
+      - traefik.http.routers.hoppscotch-admin.rule=Host(`${SERVER_HOSTNAME}`) && PathPrefix(`/admin`)
+      - traefik.http.routers.hoppscotch-admin.entrypoints=websecure
+      - traefik.http.routers.hoppscotch-admin.tls.certresolver=le-cloudflare
+      - traefik.http.routers.hoppscotch-admin.service=hoppscotch-admin
+      - traefik.http.services.hoppscotch-admin.loadbalancer.server.port=3100
+
+  frontend:
+    image: hoppscotch/hoppscotch-frontend:latest
+    container_name: hoppscotch-frontend
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - traefik-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-network
+
+      - traefik.http.routers.hoppscotch-frontend.rule=Host(`${SERVER_HOSTNAME}`)
+      - traefik.http.routers.hoppscotch-frontend.entrypoints=websecure
+      - traefik.http.routers.hoppscotch-frontend.tls.certresolver=le-cloudflare
+      - traefik.http.routers.hoppscotch-frontend.service=hoppscotch-frontend
+      - traefik.http.services.hoppscotch-frontend.loadbalancer.server.port=3000
+
+  migrate:
+    image: hoppscotch/hoppscotch-backend:latest
+    container_name: hoppscotch-migrate
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-console}?connect_timeout=300
+    networks:
+      - internal-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: [ "npx", "prisma", "migrate", "deploy" ]
+    restart: "no"
 
   postgres:
-    image: postgres:16-alpine
+    image: postgres:15
     container_name: hoppscotch-postgres
     restart: unless-stopped
-    environment:
-      - POSTGRES_DB=${DATABASE_NAME}
-      - POSTGRES_USER=${DATABASE_USER}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-    volumes:
-      - ./.docker/postgres/data:/var/lib/postgresql/data
     networks:
-      - app-network
+      - internal-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-hoppscotch}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME:-console}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+
+volumes:
+  postgres-data:
 
 
 networks:
   traefik-network:
     external: true
-  app-network:
+  internal-network:
     driver: bridge
