@@ -65,10 +65,6 @@ services:
     restart: "no"
 
 
-volumes:
-  postgres-data:
-
-
 networks:
   traefik-network:
     external: true
