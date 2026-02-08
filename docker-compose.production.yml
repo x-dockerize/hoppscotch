@@ -8,7 +8,7 @@ services:
       DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-console}?connect_timeout=300
     networks:
       - traefik-network
-      - internal-network
+      - postgres-network
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-network
@@ -60,7 +60,7 @@ services:
     environment:
       DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-console}?connect_timeout=300
     networks:
-      - internal-network
+      - postgres-network
     entrypoint: [ "npx", "prisma", "migrate", "deploy" ]
     restart: "no"
 
@@ -72,5 +72,5 @@ volumes:
 networks:
   traefik-network:
     external: true
-  internal-network:
-    driver: bridge
+  postgres-network:
+    external: true
