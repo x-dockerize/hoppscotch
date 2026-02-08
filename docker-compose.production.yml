@@ -6,9 +6,6 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-console}?connect_timeout=300
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - traefik-network
       - internal-network
@@ -64,9 +61,6 @@ services:
       DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-console}?connect_timeout=300
     networks:
       - internal-network
-    depends_on:
-      postgres:
-        condition: service_healthy
     entrypoint: [ "npx", "prisma", "migrate", "deploy" ]
     restart: "no"
 
