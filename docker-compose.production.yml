@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-console}?connect_timeout=300
+      DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-hoppscotch}?connect_timeout=300
     networks:
       - traefik-network
       - postgres-network
@@ -58,7 +58,7 @@ services:
     container_name: hoppscotch-migrate
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-console}?connect_timeout=300
+      DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-hoppscotch}?connect_timeout=300
     networks:
       - postgres-network
     entrypoint: [ "npx", "prisma", "migrate", "deploy" ]
