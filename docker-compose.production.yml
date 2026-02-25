@@ -56,13 +56,13 @@ services:
   migrate:
     image: hoppscotch/hoppscotch-backend:latest
     container_name: hoppscotch-migrate
+    restart: "no"
+    entrypoint: [ "npx", "prisma", "migrate", "deploy" ]
     env_file: .env
     environment:
       DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-hoppscotch}?connect_timeout=300
     networks:
       - postgres-network
-    entrypoint: [ "npx", "prisma", "migrate", "deploy" ]
-    restart: "no"
 
 
 networks:
