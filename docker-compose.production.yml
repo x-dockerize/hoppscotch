@@ -13,7 +13,7 @@ services:
       - traefik.enable=true
       - traefik.docker.network=traefik-network
 
-      - traefik.http.routers.hoppscotch-backend.rule=Host(`${SERVER_HOSTNAME}`) && (PathPrefix(`/graphql`) || PathPrefix(`/v1`))
+      - traefik.http.routers.hoppscotch-backend.rule=Host(`${HOPPSCOTCH_SERVER_HOSTNAME:?required}`) && (PathPrefix(`/graphql`) || PathPrefix(`/v1`))
       - traefik.http.routers.hoppscotch-backend.entrypoints=websecure
       - traefik.http.routers.hoppscotch-backend.tls.certresolver=le-cloudflare
       - traefik.http.routers.hoppscotch-backend.service=hoppscotch-backend
@@ -30,7 +30,7 @@ services:
       - traefik.enable=true
       - traefik.docker.network=traefik-network
 
-      - traefik.http.routers.hoppscotch-admin.rule=Host(`${SERVER_HOSTNAME}`) && PathPrefix(`/admin`)
+      - traefik.http.routers.hoppscotch-admin.rule=Host(`${HOPPSCOTCH_SERVER_HOSTNAME:?required}`) && PathPrefix(`/admin`)
       - traefik.http.routers.hoppscotch-admin.entrypoints=websecure
       - traefik.http.routers.hoppscotch-admin.tls.certresolver=le-cloudflare
       - traefik.http.routers.hoppscotch-admin.service=hoppscotch-admin
@@ -47,7 +47,7 @@ services:
       - traefik.enable=true
       - traefik.docker.network=traefik-network
 
-      - traefik.http.routers.hoppscotch-frontend.rule=Host(`${SERVER_HOSTNAME}`)
+      - traefik.http.routers.hoppscotch-frontend.rule=Host(`${HOPPSCOTCH_SERVER_HOSTNAME:?required}`)
       - traefik.http.routers.hoppscotch-frontend.entrypoints=websecure
       - traefik.http.routers.hoppscotch-frontend.tls.certresolver=le-cloudflare
       - traefik.http.routers.hoppscotch-frontend.service=hoppscotch-frontend
