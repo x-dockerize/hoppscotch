@@ -1,6 +1,6 @@
 services:
   backend:
-    image: hoppscotch/hoppscotch-backend:latest
+    image: hoppscotch/hoppscotch-backend:2026.1.1
     container_name: hoppscotch-backend
     restart: unless-stopped
     env_file: .env
@@ -20,7 +20,7 @@ services:
       - traefik.http.services.hoppscotch-backend.loadbalancer.server.port=3170
 
   admin:
-    image: hoppscotch/hoppscotch-admin:latest
+    image: hoppscotch/hoppscotch-admin:2026.1.1
     container_name: hoppscotch-admin
     restart: unless-stopped
     env_file: .env
@@ -37,7 +37,7 @@ services:
       - traefik.http.services.hoppscotch-admin.loadbalancer.server.port=3100
 
   frontend:
-    image: hoppscotch/hoppscotch-frontend:latest
+    image: hoppscotch/hoppscotch-frontend:2026.1.1
     container_name: hoppscotch-frontend
     restart: unless-stopped
     env_file: .env
@@ -54,7 +54,7 @@ services:
       - traefik.http.services.hoppscotch-frontend.loadbalancer.server.port=3000
 
   migrate:
-    image: hoppscotch/hoppscotch-backend:latest
+    image: hoppscotch/hoppscotch-backend:2026.1.1
     container_name: hoppscotch-migrate
     restart: "no"
     entrypoint: [ "npx", "prisma", "migrate", "deploy" ]
