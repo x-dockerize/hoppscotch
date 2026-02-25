@@ -1,11 +1,17 @@
+x-database-url: &database-url
+  DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-hoppscotch}?connect_timeout=300
+
 services:
   backend:
     image: hoppscotch/hoppscotch-backend:${HOPPSCOTCH_VERSION:?required}
     container_name: hoppscotch-backend
     restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-hoppscotch}?connect_timeout=300
+      <<: *database-url
     networks:
       - traefik-network
       - postgres-network
@@ -18,11 +24,20 @@ services:
       - traefik.http.routers.hoppscotch-backend.tls.certresolver=le-cloudflare
       - traefik.http.routers.hoppscotch-backend.service=hoppscotch-backend
       - traefik.http.services.hoppscotch-backend.loadbalancer.server.port=3170
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:3170/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   admin:
     image: hoppscotch/hoppscotch-admin:${HOPPSCOTCH_VERSION:?required}
     container_name: hoppscotch-admin
     restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
     env_file: .env
     networks:
       - traefik-network
@@ -40,6 +55,9 @@ services:
     image: hoppscotch/hoppscotch-frontend:${HOPPSCOTCH_VERSION:?required}
     container_name: hoppscotch-frontend
     restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
     env_file: .env
     networks:
       - traefik-network
@@ -60,7 +78,7 @@ services:
     entrypoint: [ "npx", "prisma", "migrate", "deploy" ]
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-hoppscotch}?connect_timeout=300
+      <<: *database-url
     networks:
       - postgres-network
 
