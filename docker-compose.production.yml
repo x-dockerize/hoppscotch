@@ -1,5 +1,5 @@
 x-database-url: &database-url
-  DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-hoppscotch}?connect_timeout=300
+  DATABASE_URL: postgresql://${DATABASE_USER:-hoppscotch}:${DATABASE_PASSWORD:?required}@${DATABASE_HOST:-postgres}:${DATABASE_PORT:-5432}/${DATABASE_NAME:-hoppscotch}?connect_timeout=300
 
 services:
   backend:
