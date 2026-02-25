@@ -12,6 +12,7 @@ services:
     env_file: .env
     environment:
       <<: *database-url
+      DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY:?required}
     networks:
       - traefik-network
       - postgres-network
@@ -50,6 +51,12 @@ services:
       - traefik.http.routers.hoppscotch-admin.tls.certresolver=le-cloudflare
       - traefik.http.routers.hoppscotch-admin.service=hoppscotch-admin
       - traefik.http.services.hoppscotch-admin.loadbalancer.server.port=3100
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:3100/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   frontend:
     image: hoppscotch/hoppscotch-frontend:${HOPPSCOTCH_VERSION:?required}
@@ -70,6 +77,12 @@ services:
       - traefik.http.routers.hoppscotch-frontend.tls.certresolver=le-cloudflare
       - traefik.http.routers.hoppscotch-frontend.service=hoppscotch-frontend
       - traefik.http.services.hoppscotch-frontend.loadbalancer.server.port=3000
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:3000/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   migrate:
     image: hoppscotch/hoppscotch-backend:${HOPPSCOTCH_VERSION:?required}
