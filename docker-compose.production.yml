@@ -78,6 +78,13 @@ services:
       - traefik.http.routers.hoppscotch-frontend.tls.certresolver=le-cloudflare
       - traefik.http.routers.hoppscotch-frontend.service=hoppscotch-frontend
       - traefik.http.services.hoppscotch-frontend.loadbalancer.server.port=3000
+
+      # Desktop App Server Router
+      - traefik.http.routers.hoppscotch-desktop.rule=Host(`${HOPPSCOTCH_SERVER_HOSTNAME:?required}`) && PathPrefix(`/desktop-app-server`)
+      - traefik.http.routers.hoppscotch-desktop.entrypoints=websecure
+      - traefik.http.routers.hoppscotch-desktop.tls.certresolver=le-cloudflare
+      - traefik.http.routers.hoppscotch-desktop.service=hoppscotch-desktop
+      - traefik.http.services.hoppscotch-desktop.loadbalancer.server.port=3200
     healthcheck:
       test: [ "CMD", "wget", "--spider", "-q", "http://localhost:3000/" ]
       interval: 30s
