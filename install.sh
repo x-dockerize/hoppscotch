@@ -58,18 +58,28 @@ set_env_once() {
 # --------------------------------------------------
 read -rp "HOPPSCOTCH_SERVER_HOSTNAME (örn: hoppscotch.example.com): " HOPPSCOTCH_SERVER_HOSTNAME
 
+echo
+echo "--- Veritabanı ---"
+read -rp "DATABASE_HOST (boş bırakılırsa: postgres): " INPUT_DB_HOST
+DATABASE_HOST="${INPUT_DB_HOST:-postgres}"
+read -rp "DATABASE_USER (boş bırakılırsa: hoppscotch): " INPUT_DB_USER
+DATABASE_USER="${INPUT_DB_USER:-hoppscotch}"
+read -rsp "DATABASE_PASSWORD: " DATABASE_PASSWORD
+echo
+
 # --------------------------------------------------
-# .env Güncelle — Hostname
+# .env Güncelle
 # --------------------------------------------------
 set_env HOPPSCOTCH_SERVER_HOSTNAME "$HOPPSCOTCH_SERVER_HOSTNAME"
+
+set_env DATABASE_HOST "$DATABASE_HOST"
+set_env DATABASE_USER "$DATABASE_USER"
+set_env DATABASE_PASSWORD "$DATABASE_PASSWORD"
 
 # --------------------------------------------------
 # .env Güncelle — Secret'lar (mevcut değerlere dokunma)
 # --------------------------------------------------
-set_env_once DATABASE_PASSWORD   "$(gen_password)"
 set_env_once DATA_ENCRYPTION_KEY "$(gen_encryption_key)"
-
-DATABASE_PASSWORD=$(grep "^DATABASE_PASSWORD=" "$ENV_FILE" | cut -d'=' -f2-)
 
 # --------------------------------------------------
 # Sonuçları Göster
@@ -79,7 +89,8 @@ echo "==============================================="
 echo "✅ Hoppscotch .env başarıyla hazırlandı"
 echo "-----------------------------------------------"
 echo "🌐 Hostname      : $HOPPSCOTCH_SERVER_HOSTNAME"
-echo "🔑 DB Şifresi    : $DATABASE_PASSWORD"
+echo "🗄️ DB Host       : $DATABASE_HOST"
+echo "👤 DB Password   : $DATABASE_USER"
 echo "-----------------------------------------------"
-echo "⚠️  Şifreyi güvenli bir yerde saklayın!"
+echo "⚠️ Şifreyi güvenli bir yerde saklayın!"
 echo "==============================================="
