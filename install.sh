@@ -86,11 +86,8 @@ set_env_once DATA_ENCRYPTION_KEY "$(gen_encryption_key)"
 # --------------------------------------------------
 echo
 echo "==============================================="
-echo "✅ Hoppscotch .env başarıyla hazırlandı"
+echo "✅ Hoppscotch .env başarıyla hazırlandı!"
 echo "-----------------------------------------------"
-echo "🌐 Hostname      : $HOPPSCOTCH_SERVER_HOSTNAME"
-echo "🗄️ DB Host       : $DATABASE_HOST"
-echo "👤 DB Password   : $DATABASE_USER"
+echo "🌐 Hostname      : https://$HOPPSCOTCH_SERVER_HOSTNAME"
 echo "-----------------------------------------------"
-echo "⚠️ Şifreyi güvenli bir yerde saklayın!"
 echo "==============================================="
