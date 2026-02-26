@@ -52,7 +52,7 @@ services:
       - traefik.http.routers.hoppscotch-admin.service=hoppscotch-admin
       - traefik.http.services.hoppscotch-admin.loadbalancer.server.port=3100
     healthcheck:
-      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:3100/" ]
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:3100/admin" ]
       interval: 30s
       timeout: 10s
       retries: 3
