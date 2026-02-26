@@ -49,6 +49,7 @@ services:
       - traefik.http.routers.hoppscotch-admin.rule=Host(`${HOPPSCOTCH_SERVER_HOSTNAME:?required}`) && PathPrefix(`/admin`)
       - traefik.http.routers.hoppscotch-admin.entrypoints=websecure
       - traefik.http.routers.hoppscotch-admin.tls.certresolver=le-cloudflare
+      - traefik.http.routers.hoppscotch-admin.middlewares=trusted@file
       - traefik.http.routers.hoppscotch-admin.service=hoppscotch-admin
       - traefik.http.services.hoppscotch-admin.loadbalancer.server.port=3100
     healthcheck:
