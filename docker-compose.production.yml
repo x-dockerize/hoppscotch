@@ -21,8 +21,8 @@ services:
       - traefik.docker.network=traefik-network
 
       - traefik.http.routers.hoppscotch-backend.rule=Host(`${HOPPSCOTCH_SERVER_HOSTNAME:?required}`) && (PathPrefix(`/graphql`) || PathPrefix(`/v1`))
-      - traefik.http.routers.hoppscotch-backend.entrypoints=websecure
-      - traefik.http.routers.hoppscotch-backend.tls.certresolver=le-cloudflare
+      - traefik.http.routers.hoppscotch-backend.entrypoints=https
+      - traefik.http.routers.hoppscotch-backend.tls.certresolver=cloudflare
       - traefik.http.routers.hoppscotch-backend.middlewares=trusted@file
       - traefik.http.routers.hoppscotch-backend.service=hoppscotch-backend
       - traefik.http.services.hoppscotch-backend.loadbalancer.server.port=3170
@@ -48,8 +48,8 @@ services:
       - traefik.docker.network=traefik-network
 
       - traefik.http.routers.hoppscotch-admin.rule=Host(`${HOPPSCOTCH_SERVER_HOSTNAME:?required}`) && PathPrefix(`/admin`)
-      - traefik.http.routers.hoppscotch-admin.entrypoints=websecure
-      - traefik.http.routers.hoppscotch-admin.tls.certresolver=le-cloudflare
+      - traefik.http.routers.hoppscotch-admin.entrypoints=https
+      - traefik.http.routers.hoppscotch-admin.tls.certresolver=cloudflare
       - traefik.http.routers.hoppscotch-admin.middlewares=trusted@file
       - traefik.http.routers.hoppscotch-admin.service=hoppscotch-admin
       - traefik.http.services.hoppscotch-admin.loadbalancer.server.port=3100
@@ -75,16 +75,16 @@ services:
       - traefik.docker.network=traefik-network
 
       - traefik.http.routers.hoppscotch-frontend.rule=Host(`${HOPPSCOTCH_SERVER_HOSTNAME:?required}`)
-      - traefik.http.routers.hoppscotch-frontend.entrypoints=websecure
-      - traefik.http.routers.hoppscotch-frontend.tls.certresolver=le-cloudflare
+      - traefik.http.routers.hoppscotch-frontend.entrypoints=https
+      - traefik.http.routers.hoppscotch-frontend.tls.certresolver=cloudflare
       - traefik.http.routers.hoppscotch-frontend.middlewares=trusted@file
       - traefik.http.routers.hoppscotch-frontend.service=hoppscotch-frontend
       - traefik.http.services.hoppscotch-frontend.loadbalancer.server.port=3000
 
       # Desktop App Server Router
       - traefik.http.routers.hoppscotch-desktop.rule=Host(`${HOPPSCOTCH_SERVER_HOSTNAME:?required}`) && PathPrefix(`/desktop-app-server`)
-      - traefik.http.routers.hoppscotch-desktop.entrypoints=websecure
-      - traefik.http.routers.hoppscotch-desktop.tls.certresolver=le-cloudflare
+      - traefik.http.routers.hoppscotch-desktop.entrypoints=https
+      - traefik.http.routers.hoppscotch-desktop.tls.certresolver=cloudflare
       - traefik.http.routers.hoppscotch-desktop.middlewares=trusted@file
       - traefik.http.routers.hoppscotch-desktop.service=hoppscotch-desktop
       - traefik.http.services.hoppscotch-desktop.loadbalancer.server.port=3200
