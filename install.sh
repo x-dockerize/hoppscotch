@@ -70,7 +70,10 @@ echo
 # --------------------------------------------------
 # .env Güncelle
 # --------------------------------------------------
+HOPPSCOTCH_DESKTOP_ORIGIN="http://app.$(echo "$HOPPSCOTCH_SERVER_HOSTNAME" | tr '.' '_')"
+
 set_env HOPPSCOTCH_SERVER_HOSTNAME "$HOPPSCOTCH_SERVER_HOSTNAME"
+set_env HOPPSCOTCH_DESKTOP_ORIGIN "$HOPPSCOTCH_DESKTOP_ORIGIN"
 
 set_env DATABASE_HOST "$DATABASE_HOST"
 set_env DATABASE_USER "$DATABASE_USER"
@@ -88,6 +91,7 @@ echo
 echo "==============================================="
 echo "✅ Hoppscotch .env başarıyla hazırlandı!"
 echo "-----------------------------------------------"
-echo "🌐 Hostname      : https://$HOPPSCOTCH_SERVER_HOSTNAME"
+echo "🌐 Hostname       : https://$HOPPSCOTCH_SERVER_HOSTNAME"
+echo "🖥️ Desktop Origin : $HOPPSCOTCH_DESKTOP_ORIGIN"
 echo "-----------------------------------------------"
 echo "==============================================="
